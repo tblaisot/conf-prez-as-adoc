@@ -1,0 +1,9 @@
+= Abstract
+
+Lassé de lutter avec Reveal.js pour mes slides de formations je me suis lancé dans l'aventure de nombreux speaker: Construire mon propre moteur de slides as code.
+
+Je vous embarque sur les traces de mon périple. De Asciidoc et son AST à l'écriture de plugins Vite.js, nous explorerons les coulisses techniques de ces outils, comment les faire fonctionner ensemble.
+
+Venez découvrir le plaisir de forger un outil sur mesure pour ses besoins et d'apprendre beaucoup de choses au passage.
+
+Le résultat est open source, peut être serez vous convaincu pour vos prochains slides !

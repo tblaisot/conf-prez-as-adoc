@@ -1,0 +1,397 @@
+= prez-as-adoc
+:imagesdir: ../assets/images
+:icons: font
+:slide-template-attr: layout
+:slide-default-template: default
+:data-attributes: step,step-items,bespoke-backdrop
+:lang: fr
+:author: FIXME
+:license: FIXME
+:copyright: No copyright
+:description: exemple of prez a doc
+:keywords: asciidoctor
+
+[%notitle]
+== La génése
+
+image::frustration.png[]
+
+[NOTE.speaker]
+La frustration comme moteur d'innovation
+
+[%notitle]
+=== Reveal vs DIY
+
+image::embranchement.png[]
+
+
+=== L'existant : Pourquoi Reveal.js ne répondait plus à mes besoins
+
+* Workflow mental complexe
+* Gestion de l'espace limitée
+* Slides à 2 directions de scroll
+** J'oublie de passer des slides
+** Je ne veut pas être limité à 2 niveaux de titres
+
+[NOTE.speaker]
+====
+ça ne correspond pas à mon modèle de reflexion ni à la façon de construire mes présentations (un plan qui est petit à petit rafiné et appronfondi)
+====
+
+[%notitle]
+=== Asciidoctor
+
+image::boss-asciidoctor.png[]
+
+=== Pourquoi Asciidoc ?
+
+Une séparation stricte entre :
+
+* Contenu structuré
+* Mise en forme fixe (layout-first)
+
+[.title-subtitle]
+== Dans les entrailles d'Asciidoctor
+
+Un outil dont l'extensibilité est un bonheur
+
+=== Parser, AST et Converter
+
+Comprendre le cycle de vie d'un document Asciidoc :
+
+* *Parser* : Analyse du texte source
+* *AST* : Représentation arborescente
+* *Converter* : Transformation vers le format cible
+
+//FIXME Ajouter un schema
+[mermaid]
+----
+graph TD
+    %% Définition des styles
+    classDef source fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef extension fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#01579b;
+    classDef core fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef output fill:#f1f8e9,stroke:#33691e,stroke-width:2px;
+
+    %% Flux principal
+    START((Début)) --> ADOC_DOC[Fichier Source .adoc]:::source
+
+    subgraph PHASE1 [Phase 1 : Pré-Analyse - Cible : ADOC / Texte]
+        ADOC_DOC --> PRE[Preprocessor]:::extension
+        PRE --> INC[IncludeProcessor]:::extension
+    end
+
+    INC --> PARSER[Parser Asciidoctor]:::core
+
+    subgraph PHASE2 [Phase 2 : Structuration - Cible : AST / Objets]
+        PARSER --> AST{AST - Arbre du Document}:::core
+
+        %% Extensions agissant sur l'AST
+        AST --> BLK[BlockProcessor]:::extension
+        AST --> BMACRO[BlockMacroProcessor]:::extension
+        AST --> IMACRO[InlineMacroProcessor]:::extension
+
+        %% Le TreeProcessor intervient quand l'AST est fini
+        BLK & BMACRO & IMACRO --> TREE[TreeProcessor]:::extension
+    end
+
+    TREE --> CONV[Convertisseur Backend HTML5]:::core
+
+    subgraph PHASE3 [Phase 3 : Post-Conversion - Cible : HTML / Sortie]
+        CONV --> POST[Postprocessor]:::extension
+        POST --> DINFO[DocinfoProcessor]:::extension
+    end
+
+    DINFO --> FINAL_HTML[Fichier Final .html]:::output
+    FINAL_HTML --> END((Fin))
+
+    %% Légende des cibles
+    PHASE1 -.-> |Agit sur le Texte| ADOC_DOC
+    PHASE2 -.-> |Manipule les Objets| AST
+    PHASE3 -.-> |Modifie le Rendu| FINAL_HTML
+----
+
+Je vais ignorer dans la suite les Preprocessor et IncludeProcessor qui sont inutile pour mon propos.
+
+==== Parser
+
+C'est l'avantage de Asciidoctor: ON NE TOUCHE JAMAIS AU PARSER.
+
+==== AST
+//FIXME ajouter exemple de l'AST
+
+==== BlockProcessor / BlockMacroProcessor / InlineMacroProcessor
+
+.custom block
+[source,asciidoc]
+-----
+[custom_block]
+----
+----
+-----
+
+.custom block macro
+[source,asciidoc]
+-----
+gist::12345[]
+-----
+
+.custom inline macro
+[source,asciidoc]
+-----
+btn:[Save]
+custom:texte[]
+-----
+
+==== Tree Processor
+
+Transforme l'AST:
+
+* Ajoute des blocks
+* Supprime des blocks
+* Modifie le contenu des blocks
+
+
+==== Converter
+
+Le mécanisme de base de asciidoctor: 1 template par type de block (1 fichier)
+
+==== PostProcessor
+
+Objectif: Transformer le HTML avant son écriture
+
+==== DocinfoProcessor
+
+Cas Particulier de Processor
+
+Objectif: dédié à injecter du contenu dans le head ou en bas du body.
+
+Utilisé par `asciidoctor-reveal.js` pour insérer le js de `reveal.js`, les styles custom etc...
+
+Mais c'est juste de l'insertion: pas de logique de transformation, bundle, minification etc... => ça me manque
+
+[.title-only]
+=== Ça existe pas déjà un converter html pour des slides ?
+
+
+==== Si:
+
+* https://github.com/asciidoctor/asciidoctor-reveal.js[asciidoctor-reveal.js]
+* https://github.com/asciidoctor/asciidoctor-bespoke[asciidoctor-bespoke]
+
+[%notitle]
+==== Cependant:
+
+image::cependant-jdg.gif[]
+
+==== Quelques inconvénients:
+
+* Je n'ai pas la main sur le HTML produit
+* Format SLIM (indentation tabulaire + ruby => très concis mais trop peut accessible pour des devs JS)
+
+[source,ruby]
+----
+- _has_title = title?
+- content_for :ol
+  ol id=(id unless _has_title) class=[(style unless style == 'arabic'), ('fit' if (_fit = option? :fit)), *build_roles, role] start=(local_attr :start) reversed=('true' if option? :reversed)
+    - items.each do |_item|
+      li class=('line' if _fit)
+        span.primary=_item.text
+        - if _item.blocks?
+          =_item.content
+- if _has_title
+  figure.list.ordered id=id
+    figcaption=title
+    - yield_content :ol
+- else
+  - yield_content :ol
+----
+
+// Fixme insérer exemple: https://github.com/asciidoctor/asciidoctor-bespoke/blob/main/templates/slim/olist.html.slim
+
+[layout=two-columns-middle]
+=== Le défi JS
+
+Traduire la logique Ruby/Slim vers un moteur de template JS sur mesure
+
+[slot=left-column]
+On passe de ça:
+
+[slot=left-column]
+[source,ruby]
+----
+- _has_title = title?
+- content_for :ol
+  ol id=(id unless _has_title) class=[(style unless style == 'arabic'), ('fit' if (_fit = option? :fit)), *build_roles, role] start=(local_attr :start) reversed=('true' if option? :reversed)
+    - items.each do |_item|
+      li class=('line' if _fit)
+        span.primary=_item.text
+        - if _item.blocks?
+          =_item.content
+- if _has_title
+  figure.list.ordered id=id
+    figcaption=title
+    - yield_content :ol
+- else
+  - yield_content :ol
+----
+
+[slot=right-column]
+à ça:
+
+[slot=right-column]
+[source,javascript]
+----
+module.exports = function ({node}) {
+    const jNode = toJSON(node);
+    return $blockWithTitle(
+        {
+            title: jNode.title,
+            id: jNode.id,
+            class: ['olist', jNode.style, jNode.role],
+            ...data_attributes(node)
+        },
+        $(
+            'ol',
+            {
+                class: jNode.style,
+                start: jNode.attributes.start,
+                type: jNode.marker,
+                reversed: jNode.options.reversed,
+            },
+            ...jNode.items.map(item =>
+                $(
+                    'li',
+                    {id: item.id, class: item.role},
+                    $printItemContent(item)
+                )
+            )
+        )
+    )
+}
+
+----
+
+[slot=footer,role=note]
+♪ je vous parle d'un temps ♬ ... avant l'IA
+
+== De l'AST au moteur de slides
+
+=== Transformation de l'arbre
+
+Passer d'un document hiérarchique à une liste de sections "à plat"
+
+//FIXME
+[source,javascript]
+----
+// Exemple de transformation
+hierarchicalAST -> flatSectionsList
+----
+
+===!
+
+image::boss-bespoke.png[]
+
+=== L'orchestration avec Bespoke.js
+
+https://github.com/bespokejs/bespoke[DIY Presentation Micro-Framework]
+//FIXME ajouter QR code lien
+
+Le choix de la simplicité et légèreté
+
+* Framework minimaliste
+* Architecture plugin simple
+* Contrôle total sur le rendu (le moteur ne fait que très peu de choses)
+
+===!
+
+image::boss-templates.png[]
+
+=== Gestion des layouts
+
+Un volonté forte: Pouvoir faciler utiliser et créer des layouts à la PowerPoint.
+
+Exemple: Implémenter des grilles (ex: 2 colonnes) via les attributs de bloc sans polluer trop la syntaxe
+
+[source,asciidoc]
+----
+[layout=two-columns]
+== My Slide
+[slot=left-column]
+Colonne 1
+
+[slot=right-column]
+Colonne 2
+----
+
+Et en simplifiant
+
+
+[source,asciidoc]
+----
+[layout=two-columns]
+== My Slide
+
+Colonne 1
+
+[slot=right-column]
+Colonne 2
+----
+
+==!
+
+image::boss-vite.png[]
+
+== L'expérience développeur/utilisateur ultime avec Vite.js
+
+[.subtitle]
+(sauf pour le créateur de plugin)
+
+Objectif: Hot Reload sans rerendu de la page, Laisser la main sur le CSS, JS, ressources statiques etc...
+
+=== Le Plugin Vite
+
+Comment transformer un fichier .adoc en module Javascript
+
+//FIXME
+* Intégration dans la chaîne de build
+* Transformation à la volée
+* Support du Hot Module Replacement
+
+=== Build vs Dev
+
+Stratégies de transformation du DOM avant et après l'étape Rollup
+
+* *Dev* : Transformation directe pour le HMR
+* *Build* : Optimisation et minification
+
+=== HMR & Fichiers virtuels
+
+Techniques pour injecter le HTML converti et rafraîchir les slides sans perdre l'état
+
+* Préservation de la position actuelle
+* Rechargement intelligent
+* Expérience développeur fluide
+
+== Démo & Conclusion
+
+=== Présentation du moteur final
+
+[.center]
+Utilisé pour les slides de cette conférence !
+
+=== Bilan : Était-ce vraiment rentable de réinventer la roue ?
+
+* ✅ Apprentissage technique approfondi
+* ✅ Outil parfaitement adapté à mes besoins
+* ✅ Open source pour la communauté
+* ⚠️ Temps d'investissement conséquent
+* 🤔 Maintenance à long terme
+
+== Questions ?
+
+[.center]
+Merci de votre attention !
+
+[.note]
+Le projet est open source et disponible sur GitHub

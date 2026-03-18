@@ -1,0 +1,19 @@
+= Plan
+
+* La frustration comme moteur d'innovation (5minutes)
+ ** L'existant : Pourquoi Reveal.js ne répondait plus à mes besoins (workflow mental, gestion de l'espace, slides a 2 directions de scroll).
+ ** Le besoin : Pourquoi Asciidoc ? Vers une séparation stricte entre contenu structuré et mise en forme fixe (layout-first).
+* Dans les entrailles d'Asciidoctor (un outils dont l'extensibilité est un bonheur) (10 minutes)
+ ** Parser, AST et Converter : Comprendre le cycle de vie d'un document Asciidoc.
+ ** Le défi JS : Traduire la logique Ruby/Slim vers un moteur de template JS sur mesure (♪ je vous parle d'un temps ♬ ... avant l'IA).
+* De l'AST au moteur de slides  (10minutes)
+ ** Transformation de l'arbre : Passer d'un document hiérarchique à une liste de sections "à plat".
+ ** L'orchestration avec Bespoke.js : Le choix de la simplicité et légéreté.
+ ** Gestion des layouts : Implémenter des grilles (ex: 2 colonnes) via les attributs de bloc sans polluer la syntaxe.
+* L'expérience développeur/utilisateur ultime avec Vite.js (pas pour le créateur de plugin) (10minutes)
+ ** Le Plugin Vite : Comment transformer un fichier .adoc en module Javascript.
+ ** Build vs Dev : Stratégies de transformation du DOM avant et après l'étape Rollup.
+ ** HMR & Fichiers virtuels : Techniques pour injecter le HTML converti et rafraîchir les slides sans perdre l'état.
+* Démo & Conclusion (5minutes)
+ ** Présentation du moteur final (utilisé pour les slides de la conf).
+ ** Bilan : Était-ce vraiment rentable de réinventer la roue ?

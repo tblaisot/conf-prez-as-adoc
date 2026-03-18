@@ -1,0 +1,31 @@
+= conf-prez-as-adoc
+:author: FIXME
+:license: FIXME
+
+This is a presentation project initialized with `create-prez-as-adoc`.
+
+== Getting Started
+
+1. Install dependencies:
+[source,bash]
+----
+npm install
+----
+
+2. Start development server:
+[source,bash]
+----
+npm run dev
+----
+
+3. Build for production:
+[source,bash]
+----
+npm run build
+----
+
+4. Present
+
+Use `arrow keys` to change slide.
+Use `v` to change mode from slide to list.
+Use `s` to display speaker mode.
