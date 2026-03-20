@@ -1,0 +1,42 @@
+ul li ul li:first-child,
+ol li ul li:first-child,
+ul li ol li:first-child,
+ol li ol li:first-child
+{
+    margin-top: 1.5em;
+}
+
+.subtitle {
+    color: var(--slide-subtitle-color);
+    font-family: var(--slide-subtitle-font-family);
+    font-size: var(--slide-subtitle-font-size);
+    line-height: var(--slide-subtitle-line-height);
+    font-weight: var(--slide-subtitle-font-weight);
+}
+
+.listing-block code {
+    color: #c9d1d9;
+    background-color: #0d1117;
+}
+:root {
+    --slide-content-gap: 0.5em;
+    --list-gap: 1em;
+}
+
+.slide .slot-content {
+    gap: 1em;
+}
+
+.slide {
+    /*line-height: 1.5;*/
+    /*gap: 1em;*/
+    gap: 0;
+}
+
+figure {
+    margin: 0;
+}
+
+p {
+    line-height: 1.5em;
+}

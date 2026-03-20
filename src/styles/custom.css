@@ -1,0 +1,21 @@
+.deck-title .slot-title {
+    display: none;
+}
+.deck-title {
+    display: block;
+    padding: 20px;
+}
+.slide.title-subtitle .slot-content {
+    text-align: center;
+}
+/*.hcenter {*/
+/*    text-align: center;*/
+/*}*/
+/*.vcenter {*/
+/*    margin-top: auto;*/
+/*    margin-bottom: auto;*/
+/*}*/
+
+.slide .slot-content {
+    justify-content: center;
+}

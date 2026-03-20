@@ -5,13 +5,19 @@
 /* Import default theme with some util blocks (image-full for exemple) */
 @import url("@tblaisot/prez-as-adoc/themes/default/main.css");
 /* Import color theme (light or dark). Can be replaced by a custom color theme */
-@import url("@tblaisot/prez-as-adoc/themes/default-light/main.css");
-/*@import url("@tblaisot/prez-as-adoc/themes/default-dark/main.css");*/
+/*@import url("@tblaisot/prez-as-adoc/themes/default-light/main.css");*/
+@import url("@tblaisot/prez-as-adoc/themes/default-dark/main.css");
+
+@import url("@onepoint/prez-as-adoc-theme-etech/styles/main.css");
+@import url("@onepoint/prez-as-adoc-theme-etech/styles/dark.css");
 
 /* Import highlight.js style for code */
-@import url('highlight.js/styles/github.css');
+@import url('highlight.js/styles/github-dark.css');
 
 @import url("./variables.css");
 @import url("./animations.css");
 
 @import url("./two-columns-middle-slide.css");
+
+@import url("./fixes.css");
+@import url("./custom.css");

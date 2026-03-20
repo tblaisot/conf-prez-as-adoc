@@ -1,5 +1,5 @@
 import * as bespoke from "bespoke";
-import bullets from "bespoke-bullets";
+// import bullets from "bespoke-bullets";
 import backdrop from "bespoke-backdrop";
 import multimedia from "bespoke-multimedia";
 import extern from "bespoke-extern";
@@ -11,9 +11,16 @@ import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import java from 'highlight.js/lib/languages/java';
 import ruby from 'highlight.js/lib/languages/ruby';
+import asciidoc from 'highlight.js/lib/languages/asciidoc';
+import json from 'highlight.js/lib/languages/json';
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('java', java);
 hljs.registerLanguage('ruby', ruby);
+hljs.registerLanguage('asciidoc', asciidoc);
+hljs.registerLanguage('json', json);
+
+import {bullets} from "./bespoke-bullets.js";
+import {highlight} from "./bespoke-highlight.js";
 
 import {
     classes,
@@ -22,9 +29,10 @@ import {
     nav,
     progress,
     scale,
+    // bullets,
     viewMode,
     speakerView,
-    highlight
+    // highlight
 } from "@tblaisot/prez-as-adoc/bespoke/plugins"
 
 const config = {
@@ -38,7 +46,7 @@ bespoke.from(config, [
     classes(),
     nav(),
     scale(config),
-    bullets('[data-step], .olist[data-step] li, .ulist[data-step] li'),
+    bullets('.olist[data-step] li, .ulist[data-step] li, [data-step]:not(.ulist):not(.olist), .inline-step'),
     hash(),
     // overview(),
     multimedia(),

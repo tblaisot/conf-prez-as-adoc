@@ -1,0 +1,43 @@
+graph LR
+    %% Définition des styles
+    classDef source fill:#333,stroke:#888,stroke-width:2px,color:#eee;
+    classDef extension fill:#0d47a1,stroke:#4fc3f7,stroke-width:2px,color:#e1f5fe;
+    classDef core fill:#5d4037,stroke:#ffb300,stroke-width:2px,color:#fff;
+    classDef output fill:#1b5e20,stroke:#8bc34a,stroke-width:2px,color:#f1f8e9;
+
+    %% Flux principal
+    START((Début)) --> ADOC_DOC[Fichier Source .adoc]:::source
+
+    subgraph PHASE1 [Phase 1 : Pré-Analyse - Cible : ADOC / Texte]
+        ADOC_DOC --> PRE[Preprocessor]:::extension
+        PRE --> INC[IncludeProcessor]:::extension
+    end
+
+    INC --> PARSER[Parser Asciidoctor]:::core
+
+    subgraph PHASE2 [Phase 2 : Structuration - Cible : AST / Objets]
+        PARSER --> AST{AST - Arbre du Document}:::core
+
+        %% Extensions agissant sur l'AST
+        AST --> BLK[BlockProcessor]:::extension
+        AST --> BMACRO[BlockMacroProcessor]:::extension
+        AST --> IMACRO[InlineMacroProcessor]:::extension
+
+        %% Le TreeProcessor intervient quand l'AST est fini
+        BLK & BMACRO & IMACRO --> TREE[TreeProcessor]:::extension
+    end
+
+    TREE --> CONV[Convertisseur Backend HTML5]:::core
+
+    subgraph PHASE3 [Phase 3 : Post-Conversion - Cible : HTML / Sortie]
+        CONV --> POST[Postprocessor]:::extension
+        POST --> DINFO[DocinfoProcessor]:::extension
+    end
+
+    DINFO --> FINAL_HTML[Fichier Final .html]:::output
+    FINAL_HTML --> END((Fin))
+
+    %% Légende des cibles
+    PHASE1 -.-> |Agit sur le Texte| ADOC_DOC
+    PHASE2 -.-> |Manipule les Objets| AST
+    PHASE3 -.-> |Modifie le Rendu| FINAL_HTML

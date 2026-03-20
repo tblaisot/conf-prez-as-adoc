@@ -11,142 +11,221 @@
 :description: exemple of prez a doc
 :keywords: asciidoctor
 
+image::grimoire.png[role=image-full]
+
 [%notitle]
 == La génése
 
-image::frustration.png[]
+image::frustration.png[role=image-full]
 
 [NOTE.speaker]
+====
+1 première grosse expérience de présentation avec Reveal.js sur 3 confs nationales
+Beaucoup de galères pour faire ce que je voulais: des animations svg au milieu du slide
+
 La frustration comme moteur d'innovation
+====
 
 [%notitle]
 === Reveal vs DIY
 
-image::embranchement.png[]
+image::embranchement.png[role=image-full]
 
+[NOTE.speaker]
+====
+2 options s'offraient à moi:
+1. Trouver des hacks pour faire ce que je voulais avec Reveal.js
+2. Partir sur une solution DIY (Do It Yourself) avec un framework plus léger
+Je me suis donc lancé dans une quete pour adapter l'outil a mon usage plutôt que de m'adapter à l'outil
+====
 
-=== L'existant : Pourquoi Reveal.js ne répondait plus à mes besoins
+[%notitle]
+=== Hero
 
-* Workflow mental complexe
-* Gestion de l'espace limitée
+image::aventurier.png[role=image-full]
+
+[NOTE.speaker]
+====
+Comme toute bonne quête, il me fallait un héros/aventurier
+====
+
+[%notitle]
+=== Speaker
+
+image::fiche-personnage.png[role=image-full]
+
+=== Why not Reveal.js
+
+[%step]
+* Gestion de l'espace pénible
+* Workflow mental incompatible
 * Slides à 2 directions de scroll
 ** J'oublie de passer des slides
 ** Je ne veut pas être limité à 2 niveaux de titres
 
 [NOTE.speaker]
 ====
-ça ne correspond pas à mon modèle de reflexion ni à la façon de construire mes présentations (un plan qui est petit à petit rafiné et appronfondi)
+Reveal.js ne répondait plus à mes besoins
+
+* Gestion de l'espace pénible: tout est centré
+* Workflow mental incompatible: à la façon de construire mes présentations (un plan qui est petit à petit rafiné et appronfondi)
+* Slides à 2 directions de scroll
+** J'oublie de passer des slides
+** Je ne veut pas être limité à 2 niveaux de titres
 ====
 
 [%notitle]
 === Asciidoctor
 
-image::boss-asciidoctor.png[]
+image::boss-asciidoctor-titled.png[role=image-full]
 
 === Pourquoi Asciidoc ?
 
+[%step.subtitle]
+Pourquoi pas Markdown ?
+
+[%step]
 Une séparation stricte entre :
 
+[%step]
 * Contenu structuré
 * Mise en forme fixe (layout-first)
 
 [.title-subtitle]
-== Dans les entrailles d'Asciidoctor
+== Dans les entrailles d'Asciidoctor ❤
 
-Un outil dont l'extensibilité est un bonheur
+un bonheur d'extensibilité
 
 === Parser, AST et Converter
 
 Comprendre le cycle de vie d'un document Asciidoc :
 
+[%step]
 * *Parser* : Analyse du texte source
 * *AST* : Représentation arborescente
 * *Converter* : Transformation vers le format cible
 
-//FIXME Ajouter un schema
-[mermaid]
-----
-graph TD
-    %% Définition des styles
-    classDef source fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef extension fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#01579b;
-    classDef core fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
-    classDef output fill:#f1f8e9,stroke:#33691e,stroke-width:2px;
+[%step]
+image::asciidoctor-pipeline.png[]
 
-    %% Flux principal
-    START((Début)) --> ADOC_DOC[Fichier Source .adoc]:::source
 
-    subgraph PHASE1 [Phase 1 : Pré-Analyse - Cible : ADOC / Texte]
-        ADOC_DOC --> PRE[Preprocessor]:::extension
-        PRE --> INC[IncludeProcessor]:::extension
-    end
-
-    INC --> PARSER[Parser Asciidoctor]:::core
-
-    subgraph PHASE2 [Phase 2 : Structuration - Cible : AST / Objets]
-        PARSER --> AST{AST - Arbre du Document}:::core
-
-        %% Extensions agissant sur l'AST
-        AST --> BLK[BlockProcessor]:::extension
-        AST --> BMACRO[BlockMacroProcessor]:::extension
-        AST --> IMACRO[InlineMacroProcessor]:::extension
-
-        %% Le TreeProcessor intervient quand l'AST est fini
-        BLK & BMACRO & IMACRO --> TREE[TreeProcessor]:::extension
-    end
-
-    TREE --> CONV[Convertisseur Backend HTML5]:::core
-
-    subgraph PHASE3 [Phase 3 : Post-Conversion - Cible : HTML / Sortie]
-        CONV --> POST[Postprocessor]:::extension
-        POST --> DINFO[DocinfoProcessor]:::extension
-    end
-
-    DINFO --> FINAL_HTML[Fichier Final .html]:::output
-    FINAL_HTML --> END((Fin))
-
-    %% Légende des cibles
-    PHASE1 -.-> |Agit sur le Texte| ADOC_DOC
-    PHASE2 -.-> |Manipule les Objets| AST
-    PHASE3 -.-> |Modifie le Rendu| FINAL_HTML
-----
-
+[NOTE.speaker]
 Je vais ignorer dans la suite les Preprocessor et IncludeProcessor qui sont inutile pour mon propos.
 
 ==== Parser
 
-C'est l'avantage de Asciidoctor: ON NE TOUCHE JAMAIS AU PARSER.
+[TIP,step=false]
+ON NE TOUCHE JAMAIS AU PARSER.
 
-==== AST
-//FIXME ajouter exemple de l'AST
+[NOTE.speaker]
+C'est l'avantage de Asciidoctor
+En réalité il est possible de faire du parsing custom mais c'est très compliqué et pas du tout nécessaire dans la plupart des cas.
 
-==== BlockProcessor / BlockMacroProcessor / InlineMacroProcessor
+==== AST: Abstract Syntax Tree
+
+[source]
+----
+Document             context: document
+  Block              context: preamble
+    Block            context: paragraph
+                    This document demon...
+  Section            context: section    level: 1
+    Block            context: paragraph
+                    A section has some ...
+    Section          context: section    level: 2
+      List           context: ulist
+        ListItem     context: list_item
+                    One
+        ListItem     context: list_item
+                    Two
+        ListItem     context: list_item
+                    Three
+      Block          context: paragraph
+                    Or even tables
+      Table          context: table      style: table
+      Block          context: paragraph
+                    and sources as well
+      Block          context: listing    style: source
+                    puts 'Hello, World!'
+----
+
+[.title-only]
+==== Processors
+
+===== BlockProcessor
 
 .custom block
 [source,asciidoc]
 -----
 [custom_block]
 ----
+mon super block
 ----
 -----
+
+[source,javascript]
+----
+module.exports = function (registry) {
+  registry.block(function () {
+    const self = this;
+    self.named('custom_block');
+    self.onContext('paragraph');
+    self.process(function (parent, reader) {
+      const lines = reader.getLines().map(function (l) { return l.toUpperCase() })
+      return self.createBlock(parent, 'paragraph', lines);
+    });
+  });
+}
+----
+
+===== BlockMacroProcessor
 
 .custom block macro
 [source,asciidoc]
 -----
-gist::12345[]
+gist::maelvls/79d49740ce9208c26d6a1b10b0d95b5e[]
 -----
+
+[source,javascript]
+----
+module.exports = function (registry) {
+  registry.blockMacro(function () {
+    const self = this;
+    self.named('gist');
+    self.process(function (parent, target, attrs) {
+      const result = getGist({gistName: target});
+      return self.createBlock(parent, 'paragraph', result);
+    })
+  })
+}
+----
+
+===== InlineMacroProcessor
 
 .custom inline macro
 [source,asciidoc]
 -----
-btn:[Save]
-custom:texte[]
+Click the btn:[Save] button emoticon:wink[]
 -----
+
+[source,javascript]
+----
+module.exports = function (registry) {
+  registry.inlineMacro('emoticon', function () {
+    const self = this;
+    self.process(function (parent, target) {
+      const text = getEmoticon(target);
+      return self.createInline(parent, 'quoted', text, { 'type': 'strong' });
+    })
+  })
+}
+----
 
 ==== Tree Processor
 
-Transforme l'AST:
+Transforme l'AST
 
+[%step]
 * Ajoute des blocks
 * Supprime des blocks
 * Modifie le contenu des blocks
@@ -154,40 +233,65 @@ Transforme l'AST:
 
 ==== Converter
 
-Le mécanisme de base de asciidoctor: 1 template par type de block (1 fichier)
+Le converter de base de asciidoctor est customisable via des templates:
 
+[%step]
+* 1 template par type de block
+* 1 fichier par template (name = block name)
+
+[.title-subtitle]
 ==== PostProcessor
 
 Objectif: Transformer le HTML avant son écriture
 
+[NOTE.speaker]
+Pas utilisé dans mon cas
+
 ==== DocinfoProcessor
 
+[.subtitle]
 Cas Particulier de Processor
 
 Objectif: dédié à injecter du contenu dans le head ou en bas du body.
 
+[%step]
+Exemple d'usage: +
 Utilisé par `asciidoctor-reveal.js` pour insérer le js de `reveal.js`, les styles custom etc...
 
+[NOTE.speaker]
 Mais c'est juste de l'insertion: pas de logique de transformation, bundle, minification etc... => ça me manque
 
 [.title-only]
-=== Ça existe pas déjà un converter html pour des slides ?
+=== Ça existe pas déjà ?
 
 
-==== Si:
+==== Ça existe:
 
+Et vous en connaissez surement déjà certains :
+
+[%step]
 * https://github.com/asciidoctor/asciidoctor-reveal.js[asciidoctor-reveal.js]
 * https://github.com/asciidoctor/asciidoctor-bespoke[asciidoctor-bespoke]
 
 [%notitle]
 ==== Cependant:
 
+[.image-full]
 image::cependant-jdg.gif[]
 
 ==== Quelques inconvénients:
 
-* Je n'ai pas la main sur le HTML produit
-* Format SLIM (indentation tabulaire + ruby => très concis mais trop peut accessible pour des devs JS)
+[%step]
+* Pas vraiment la main sur le HTML produit ...
+* ... sauf en écrivant des templates de remplacement ...
+* ... au format SLIM
+
+[NOTE.speaker]
+Les converter sont écris pour asciidoctor ruby
+SLIM = indentation tabulaire + ruby => très concis mais trop peut accessible pour des devs JS
+
+[%notitle]
+===== SLIM
 
 [source,ruby]
 ----
@@ -207,12 +311,13 @@ image::cependant-jdg.gif[]
   - yield_content :ol
 ----
 
-// Fixme insérer exemple: https://github.com/asciidoctor/asciidoctor-bespoke/blob/main/templates/slim/olist.html.slim
-
-[layout=two-columns-middle]
+[.title-subtitle]
 === Le défi JS
 
 Traduire la logique Ruby/Slim vers un moteur de template JS sur mesure
+
+[%notitle,layout=two-columns]
+==== Comparaison
 
 [slot=left-column]
 On passe de ça:
@@ -269,54 +374,102 @@ module.exports = function ({node}) {
         )
     )
 }
-
 ----
 
-[slot=footer,role=note]
-♪ je vous parle d'un temps ♬ ... avant l'IA
+[NOTE.speaker]
+on est obligé de rester en commonjs
 
+[.title-subtitle]
+==== ♪ je vous parle d'un temps ♬ [inline-step]#...avant l'IA#
+
+[.title-only]
 == De l'AST au moteur de slides
 
+[layout=two-columns]
 === Transformation de l'arbre
-
+[NOTE.speaker]
 Passer d'un document hiérarchique à une liste de sections "à plat"
 
-//FIXME
-[source,javascript]
+[slot=left-column]
+[source]
 ----
-// Exemple de transformation
-hierarchicalAST -> flatSectionsList
+Document      context: document
+  Section     context: section    level: 1
+    Block     context: paragraph
+             A slide
+    Section   context: section    level: 2
+      Block   context: paragraph
+             A sub slide
+    Section   context: section    level: 2
+      Block   context: paragraph
+             Another sub slide on level 2
+  Section     context: section    level: 1
+    Block     context: paragraph
+             A lvl 1 slide
 ----
 
-===!
+[slot=right-column]
+[source,html]
+----
+<section>
+    <h1>A slide</h1>
+</section>
+<section>
+    <h2>A sub slide</h2>
+</section>
+<section>
+    <h2>Another sub slide on level 2</h2>
+</section>
+<section>
+    <h1>A lvl 1 slide</h1>
+</section>
+----
 
-image::boss-bespoke.png[]
+[%notitle]
+=== Bespoke
+
+image::boss-bespoke-titled.png[]
 
 === L'orchestration avec Bespoke.js
 
+[.hcenter.vcenter]
 https://github.com/bespokejs/bespoke[DIY Presentation Micro-Framework]
-//FIXME ajouter QR code lien
 
+==== Why
+
+[%step]
 Le choix de la simplicité et légèreté
 
+[%step]
 * Framework minimaliste
 * Architecture plugin simple
-* Contrôle total sur le rendu (le moteur ne fait que très peu de choses)
+* Contrôle total sur le rendu
 
-===!
+[NOTE.speaker]
+le moteur ne fait que très peu de choses nottament sur le rendu contrairement à Revealjs.
+Pas de centrage, pas de backdrop dans des divs séparées etc...
 
-image::boss-templates.png[]
+[%notitle]
+=== Le moteur de template
 
+image::boss-templates-titled.png[]
+
+[.title-subtitle]
 === Gestion des layouts
 
-Un volonté forte: Pouvoir faciler utiliser et créer des layouts à la PowerPoint.
+Pouvoir faciler utiliser et créer des layouts à la PowerPoint.
 
-Exemple: Implémenter des grilles (ex: 2 colonnes) via les attributs de bloc sans polluer trop la syntaxe
+
+==== Exemple: 2 colonnes
+
+[NOTE.speaker]
+Implémenter des grilles (ex: 2 colonnes) via les attributs de bloc sans polluer trop la syntaxe
 
 [source,asciidoc]
 ----
 [layout=two-columns]
 == My Slide
+
 [slot=left-column]
 Colonne 1
 
@@ -324,8 +477,9 @@ Colonne 1
 Colonne 2
 ----
 
-Et en simplifiant
-
+[%step]
+--
+En simplifiant
 
 [source,asciidoc]
 ----
@@ -337,61 +491,145 @@ Colonne 1
 [slot=right-column]
 Colonne 2
 ----
+--
 
-==!
+==== Implémentation
 
-image::boss-vite.png[]
+[%step]
+* Un modèle inspiré de la logique des slots du shadow DOM des custom elements W3C
+* Facile a implémenter quand on a l'AST et la main sur le converter
 
-== L'expérience développeur/utilisateur ultime avec Vite.js
+[%notitle]
+== Vite
+
+image::boss-vite-titled.png[]
+
+=== L'expérience développeur
 
 [.subtitle]
 (sauf pour le créateur de plugin)
 
-Objectif: Hot Reload sans rerendu de la page, Laisser la main sur le CSS, JS, ressources statiques etc...
+[%step]
+Objectifs: +
+Hot Reload sans rerendu de la page, +
+Laisser la main sur le processing du CSS, du JS, des ressources statiques +
+etc...
 
+[.title-subtitle]
 === Le Plugin Vite
 
 Comment transformer un fichier .adoc en module Javascript
-
-//FIXME
-* Intégration dans la chaîne de build
-* Transformation à la volée
-* Support du Hot Module Replacement
 
 === Build vs Dev
 
 Stratégies de transformation du DOM avant et après l'étape Rollup
 
+[%step]
 * *Dev* : Transformation directe pour le HMR
 * *Build* : Optimisation et minification
 
-=== HMR & Fichiers virtuels
+[NOTE.speaker]
+====
+* distinction forte entre dev et build = prod dans vite
+====
 
-Techniques pour injecter le HTML converti et rafraîchir les slides sans perdre l'état
+[.title-only]
+==== Dev
 
-* Préservation de la position actuelle
-* Rechargement intelligent
-* Expérience développeur fluide
+===== Tricher sur le type de fichier
 
+[.vcenter]
+* `.adoc` -> application/javascript
+
+=====  Gérer la résolution du fichier adoc
+
+[.vcenter]
+* Résoudre les chemins relatifs
+
+===== Implémentater la transformation `adoc` en `html`
+
+[.vcenter]
+* Convertir le `adoc` en `html` en utilisant tout le travail précédent
+* Extraire la liste des resources statiques référencées
+* Extraire la liste des imports adoc
+
+===== Wrapper le `html` en `js`
+
+[.vcenter]
+* Transformer les resources statiques référencées en imports JS
+* Exporter le HTML transformé en string avec un magnifique `innerHTML = ...`
+
+===== Importer le contenu dans le html
+
+[.vcenter]
+* Insérer une balise `<script>` à la place du fichier adoc
+
+===== Gérer les dépendances entre modules et le HMR
+
+[.vcenter]
+* Implémenter une logique de dépendances pour les fichiers adoc
+
+[.title-only]
+==== Build (ou Prod)
+
+===== Beaucoup plus simple ...
+
+[%step]
+. Convertir le `adoc` en `html`
+. Editer le head pour ajouter les `meta` sur la base des attributs du document
+. Laisser le reste du travail à Vite (bundle, minification, etc...)
+
+[.title-only]
+== Une petite quête de plus avant de déconnecter ?
+
+[.title-only]
+=== `npm create`
+
+==== Une simple convention
+
+[%step]
+* pour utiliser `npm create xxx` il faut un package npm `create-xxx`
+* ce package doit exporter un binaire `create-xxx` qui sera exécuté par npm
+* une CLI minimale qui copie les fichiers de template dans le dossier créé
+* BONUS: demander à l'utilisateur si il faut installer les dépendances et lancer le mode dev
+
+[.title-only]
+=== Themes
+
+==== Du pur CSS
+
+* Vite brille et permet de laisser la main sur le traitement du CSS
+* Possibilité de faire du CSS "classique" ou d'utiliser un framework CSS
+
+[.title-only]
 == Démo & Conclusion
 
+[.title-subtitle]
 === Présentation du moteur final
 
-[.center]
+[%step]
 Utilisé pour les slides de cette conférence !
 
 === Bilan : Était-ce vraiment rentable de réinventer la roue ?
 
+[%step]
 * ✅ Apprentissage technique approfondi
 * ✅ Outil parfaitement adapté à mes besoins
 * ✅ Open source pour la communauté
 * ⚠️ Temps d'investissement conséquent
 * 🤔 Maintenance à long terme
 
+[.title-subtitle]
+==== Un Inconvénient ?
+
+[%step]
+Ça ne résoud pas mon incompétence en CSS 😉
+
+
+[.title-subtitle]
 == Questions ?
 
-[.center]
 Merci de votre attention !
 
-[.note]
+[NOTE.speaker]
 Le projet est open source et disponible sur GitHub
