@@ -1,7 +1,10 @@
-.deck-title .slot-title {
+.slide.deck-title .slot-title {
     display: none;
 }
-.deck-title {
+.slide.deck-title .slot-content {
+    display: block;
+}
+.slide.deck-title {
     display: block;
     padding: 20px;
 }

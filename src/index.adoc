@@ -1,5 +1,5 @@
 = prez-as-adoc
-:imagesdir: ../assets/images
+:imagesdir: assets/images
 :icons: font
 :slide-template-attr: layout
 :slide-default-template: default
@@ -54,10 +54,10 @@ Comme toute bonne quête, il me fallait un héros/aventurier
 
 image::fiche-personnage.png[role=image-full]
 
-=== Why not Reveal.js
+=== Why not Reveal.js ?
 
 [%step]
-* Gestion de l'espace pénible
+* Gestion de la surface d'écran pénible
 * Workflow mental incompatible
 * Slides à 2 directions de scroll
 ** J'oublie de passer des slides
@@ -79,17 +79,42 @@ Reveal.js ne répondait plus à mes besoins
 
 image::boss-asciidoctor-titled.png[role=image-full]
 
-=== Pourquoi Asciidoc ?
+[.title-subtitle]
+=== Why not Markdown ?
 
-[%step.subtitle]
-Pourquoi pas Markdown ?
+Nombreuses "Flavors"
+
+=== Markdown
+
+Créé en *2004* par John Gruber… sans spécification stricte.
+
+[%step]
+* *CommonMark* : standardisation stricte, syntaxe minimale
+* *GFM* : tables, checklists, code coloré _(GitHub)_
+* *Pandoc* : LaTeX, citations, conversion multi-formats
+* *MDX* : composants JSX/Vue injectés dans le contenu
+* *Markdoc* : alternative déclarative sans JS arbitraire _(Stripe)_
+
+=== J'aime pas Markdown
+
+[%step]
+*Résultat :* pas de « Markdown » universel.
+
+[%step]
+* Pas de parser unique → dépendance à la "flavor" choisie
+* Pas d'AST exposé → impossible de contrôler "simplement" le rendu HTML
+
+[NOTE.speaker]
+John Gruber crée Markdown en 2004. Spec volontairement légère → trop ambiguë → explosion de variantes incompatibles entre elles.
+
+=== Why Asciidoc ?
 
 [%step]
 Une séparation stricte entre :
 
 [%step]
 * Contenu structuré
-* Mise en forme fixe (layout-first)
+* Mise en forme
 
 [.title-subtitle]
 == Dans les entrailles d'Asciidoctor ❤
@@ -382,6 +407,9 @@ on est obligé de rester en commonjs
 [.title-subtitle]
 ==== ♪ je vous parle d'un temps ♬ [inline-step]#...avant l'IA#
 
+[NOTE.speaker]
+40 templates à réécrire...
+
 [.title-only]
 == De l'AST au moteur de slides
 
@@ -541,12 +569,12 @@ Stratégies de transformation du DOM avant et après l'étape Rollup
 [.vcenter]
 * `.adoc` -> application/javascript
 
-=====  Gérer la résolution du fichier adoc
+// =====  Gérer la résolution du fichier adoc
+//
+// [.vcenter]
+// * Résoudre les chemins relatifs
 
-[.vcenter]
-* Résoudre les chemins relatifs
-
-===== Implémentater la transformation `adoc` en `html`
+===== Implémenter la transformation `adoc` en `html`
 
 [.vcenter]
 * Convertir le `adoc` en `html` en utilisant tout le travail précédent
@@ -557,7 +585,8 @@ Stratégies de transformation du DOM avant et après l'étape Rollup
 
 [.vcenter]
 * Transformer les resources statiques référencées en imports JS
-* Exporter le HTML transformé en string avec un magnifique `innerHTML = ...`
+* Exporter le HTML transformé en string avec un magnifique +
+`innerHTML = ...`
 
 ===== Importer le contenu dans le html
 
@@ -624,6 +653,9 @@ Utilisé pour les slides de cette conférence !
 
 [%step]
 Ça ne résoud pas mon incompétence en CSS 😉
+
+[NOTE.speaker]
+Mais grace aux layouts je peux être nul une fois et reutiliser mes mises en page !
 
 
 [.title-subtitle]

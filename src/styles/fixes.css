@@ -6,8 +6,8 @@ ol li ol li:first-child
     margin-top: 1.5em;
 }
 
-.subtitle {
-    color: var(--slide-subtitle-color);
+.slide.title-subtitle .slot-content {
+    --slide-subtitle-color: var(--brand-text);
     font-family: var(--slide-subtitle-font-family);
     font-size: var(--slide-subtitle-font-size);
     line-height: var(--slide-subtitle-line-height);
