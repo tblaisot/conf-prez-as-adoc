@@ -9,7 +9,7 @@
 :license: FIXME
 :copyright: No copyright
 :description: exemple of prez a doc
-:keywords: asciidoctor
+:keywords: asciidoctorz
 
 image::grimoire.png[role=image-full]
 
@@ -95,6 +95,7 @@ Créé en *2004* par John Gruber… sans spécification stricte.
 * *MDX* : composants JSX/Vue injectés dans le contenu
 * *Markdoc* : alternative déclarative sans JS arbitraire _(Stripe)_
 
+[%notitle]
 === J'aime pas Markdown
 
 [%step]
@@ -107,6 +108,16 @@ Créé en *2004* par John Gruber… sans spécification stricte.
 [NOTE.speaker]
 John Gruber crée Markdown en 2004. Spec volontairement légère → trop ambiguë → explosion de variantes incompatibles entre elles.
 
+=== Asciidoc
+
+Créé en *2002* par Stuart Rackham avec un parser Python… sans spécification stricte.
+
+[%step]
+* *2013* : Asciidoctor (Dan Allen, Sarah White), réécriture en Ruby (x100 sur les perfs)
+* *2019* : Intégration à la Fondation Eclipse, standardisation du langage
+* *2024* : Création par *AsciiDoc Working Group* des spec formelles et du *TCK* _(Technology Compatibility Kit)_
+
+
 === Why Asciidoc ?
 
 [%step]
@@ -115,11 +126,10 @@ Une séparation stricte entre :
 [%step]
 * Contenu structuré
 * Mise en forme
+* Une véritable extensibilité
 
-[.title-subtitle]
-== Dans les entrailles d'Asciidoctor ❤
-
-un bonheur d'extensibilité
+[.title-only]
+== Dans les entrailles d'Asciidoctor
 
 === Parser, AST et Converter
 
